@@ -412,7 +412,7 @@ def generate_openai_embeddings(
                 "Authorization": f"Bearer {key}",
             },
             json={"input": text, "model": model},
-        )
+        timeout=60)
         r.raise_for_status()
         data = r.json()
         if "data" in data:

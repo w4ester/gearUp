@@ -295,7 +295,7 @@ CUSTOM_NAME = os.environ.get("CUSTOM_NAME", "")
 
 if CUSTOM_NAME:
     try:
-        r = requests.get(f"https://api.openwebui.com/api/v1/custom/{CUSTOM_NAME}")
+        r = requests.get(f"https://api.openwebui.com/api/v1/custom/{CUSTOM_NAME}", timeout=60)
         data = r.json()
         if r.ok:
             if "logo" in data:
@@ -305,7 +305,7 @@ if CUSTOM_NAME:
                     else data["logo"]
                 )
 
-                r = requests.get(url, stream=True)
+                r = requests.get(url, stream=True, timeout=60)
                 if r.status_code == 200:
                     with open(f"{STATIC_DIR}/favicon.png", "wb") as f:
                         r.raw.decode_content = True

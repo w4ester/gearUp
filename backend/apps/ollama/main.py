@@ -192,7 +192,7 @@ async def get_ollama_tags(
     else:
         url = app.state.config.OLLAMA_BASE_URLS[url_idx]
         try:
-            r = requests.request(method="GET", url=f"{url}/api/tags")
+            r = requests.request(method="GET", url=f"{url}/api/tags", timeout=60)
             r.raise_for_status()
 
             return r.json()
@@ -243,7 +243,7 @@ async def get_ollama_versions(url_idx: Optional[int] = None):
     else:
         url = app.state.config.OLLAMA_BASE_URLS[url_idx]
         try:
-            r = requests.request(method="GET", url=f"{url}/api/version")
+            r = requests.request(method="GET", url=f"{url}/api/version", timeout=60)
             r.raise_for_status()
 
             return r.json()
@@ -307,7 +307,7 @@ async def pull_model(
                 url=f"{url}/api/pull",
                 data=form_data.model_dump_json(exclude_none=True).encode(),
                 stream=True,
-            )
+            timeout=60)
 
             r.raise_for_status()
 
@@ -379,7 +379,7 @@ async def push_model(
                 method="POST",
                 url=f"{url}/api/push",
                 data=form_data.model_dump_json(exclude_none=True).encode(),
-            )
+            timeout=60)
 
             r.raise_for_status()
 
@@ -442,7 +442,7 @@ async def create_model(
                 url=f"{url}/api/create",
                 data=form_data.model_dump_json(exclude_none=True).encode(),
                 stream=True,
-            )
+            timeout=60)
 
             r.raise_for_status()
 
@@ -504,7 +504,7 @@ async def copy_model(
             method="POST",
             url=f"{url}/api/copy",
             data=form_data.model_dump_json(exclude_none=True).encode(),
-        )
+        timeout=60)
         r.raise_for_status()
 
         log.debug(f"r.text: {r.text}")
@@ -551,7 +551,7 @@ async def delete_model(
             method="DELETE",
             url=f"{url}/api/delete",
             data=form_data.model_dump_json(exclude_none=True).encode(),
-        )
+        timeout=60)
         r.raise_for_status()
 
         log.debug(f"r.text: {r.text}")
@@ -591,7 +591,7 @@ async def show_model_info(form_data: ModelNameForm, user=Depends(get_verified_us
             method="POST",
             url=f"{url}/api/show",
             data=form_data.model_dump_json(exclude_none=True).encode(),
-        )
+        timeout=60)
         r.raise_for_status()
 
         return r.json()
@@ -648,7 +648,7 @@ async def generate_embeddings(
             method="POST",
             url=f"{url}/api/embeddings",
             data=form_data.model_dump_json(exclude_none=True).encode(),
-        )
+        timeout=60)
         r.raise_for_status()
 
         return r.json()
@@ -698,7 +698,7 @@ def generate_ollama_embeddings(
             method="POST",
             url=f"{url}/api/embeddings",
             data=form_data.model_dump_json(exclude_none=True).encode(),
-        )
+        timeout=60)
         r.raise_for_status()
 
         data = r.json()
@@ -794,7 +794,7 @@ async def generate_completion(
                 url=f"{url}/api/generate",
                 data=form_data.model_dump_json(exclude_none=True).encode(),
                 stream=True,
-            )
+            timeout=60)
 
             r.raise_for_status()
 
@@ -903,7 +903,7 @@ async def generate_chat_completion(
                 url=f"{url}/api/chat",
                 data=form_data.model_dump_json(exclude_none=True).encode(),
                 stream=True,
-            )
+            timeout=60)
 
             r.raise_for_status()
 
@@ -1008,7 +1008,7 @@ async def generate_openai_chat_completion(
                 url=f"{url}/v1/chat/completions",
                 data=form_data.model_dump_json(exclude_none=True).encode(),
                 stream=True,
-            )
+            timeout=60)
 
             r.raise_for_status()
 
@@ -1073,7 +1073,7 @@ async def get_openai_models(
     else:
         url = app.state.config.OLLAMA_BASE_URLS[url_idx]
         try:
-            r = requests.request(method="GET", url=f"{url}/api/tags")
+            r = requests.request(method="GET", url=f"{url}/api/tags", timeout=60)
             r.raise_for_status()
 
             models = r.json()
@@ -1167,7 +1167,7 @@ async def download_file_stream(
                     file.seek(0)
 
                     url = f"{ollama_url}/api/blobs/sha256:{hashed}"
-                    response = requests.post(url, data=file)
+                    response = requests.post(url, data=file, timeout=60)
 
                     if response.ok:
                         res = {
@@ -1264,7 +1264,7 @@ def upload_model(file: UploadFile = File(...), url_idx: Optional[int] = None):
                     f.seek(0)
 
                     url = f"{ollama_url}/api/blobs/sha256:{hashed}"
-                    response = requests.post(url, data=f)
+                    response = requests.post(url, data=f, timeout=60)
 
                     if response.ok:
                         res = {
@@ -1388,7 +1388,7 @@ async def deprecated_proxy(
                 data=body,
                 headers=headers,
                 stream=True,
-            )
+            timeout=60)
 
             r.raise_for_status()
 

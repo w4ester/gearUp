@@ -126,7 +126,7 @@ async def update_engine_url(
     else:
         url = form_data.AUTOMATIC1111_BASE_URL.strip("/")
         try:
-            r = requests.head(url)
+            r = requests.head(url, timeout=60)
             app.state.config.AUTOMATIC1111_BASE_URL = url
         except Exception as e:
             raise HTTPException(status_code=400, detail=ERROR_MESSAGES.DEFAULT(e))
@@ -137,7 +137,7 @@ async def update_engine_url(
         url = form_data.COMFYUI_BASE_URL.strip("/")
 
         try:
-            r = requests.head(url)
+            r = requests.head(url, timeout=60)
             app.state.config.COMFYUI_BASE_URL = url
         except Exception as e:
             raise HTTPException(status_code=400, detail=ERROR_MESSAGES.DEFAULT(e))
@@ -242,7 +242,7 @@ def get_models(user=Depends(get_current_user)):
             ]
         elif app.state.config.ENGINE == "comfyui":
 
-            r = requests.get(url=f"{app.state.config.COMFYUI_BASE_URL}/object_info")
+            r = requests.get(url=f"{app.state.config.COMFYUI_BASE_URL}/object_info", timeout=60)
             info = r.json()
 
             return list(
@@ -254,8 +254,8 @@ def get_models(user=Depends(get_current_user)):
 
         else:
             r = requests.get(
-                url=f"{app.state.config.AUTOMATIC1111_BASE_URL}/sdapi/v1/sd-models"
-            )
+                url=f"{app.state.config.AUTOMATIC1111_BASE_URL}/sdapi/v1/sd-models", 
+            timeout=60)
             models = r.json()
             return list(
                 map(
@@ -281,8 +281,8 @@ async def get_default_model(user=Depends(get_admin_user)):
             return {"model": (app.state.config.MODEL if app.state.config.MODEL else "")}
         else:
             r = requests.get(
-                url=f"{app.state.config.AUTOMATIC1111_BASE_URL}/sdapi/v1/options"
-            )
+                url=f"{app.state.config.AUTOMATIC1111_BASE_URL}/sdapi/v1/options", 
+            timeout=60)
             options = r.json()
             return {"model": options["sd_model_checkpoint"]}
     except Exception as e:
@@ -300,8 +300,8 @@ def set_model_handler(model: str):
         return app.state.config.MODEL
     else:
         r = requests.get(
-            url=f"{app.state.config.AUTOMATIC1111_BASE_URL}/sdapi/v1/options"
-        )
+            url=f"{app.state.config.AUTOMATIC1111_BASE_URL}/sdapi/v1/options", 
+        timeout=60)
         options = r.json()
 
         if model != options["sd_model_checkpoint"]:
@@ -309,7 +309,7 @@ def set_model_handler(model: str):
             r = requests.post(
                 url=f"{app.state.config.AUTOMATIC1111_BASE_URL}/sdapi/v1/options",
                 json=options,
-            )
+            timeout=60)
 
         return options
 
@@ -365,7 +365,7 @@ def save_b64_image(b64_str):
 def save_url_image(url):
     image_id = str(uuid.uuid4())
     try:
-        r = requests.get(url)
+        r = requests.get(url, timeout=60)
         r.raise_for_status()
         if r.headers["content-type"].split("/")[0] == "image":
 
@@ -425,7 +425,7 @@ def generate_image(
                 url=f"{app.state.config.OPENAI_API_BASE_URL}/images/generations",
                 json=data,
                 headers=headers,
-            )
+            timeout=60)
 
             r.raise_for_status()
             res = r.json()
@@ -499,7 +499,7 @@ def generate_image(
             r = requests.post(
                 url=f"{app.state.config.AUTOMATIC1111_BASE_URL}/sdapi/v1/txt2img",
                 json=data,
-            )
+            timeout=60)
 
             res = r.json()
 
