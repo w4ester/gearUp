@@ -90,7 +90,7 @@ print(
 
       
 v{VERSION} - building the best open-source AI user interface.      
-https://github.com/open-webui/open-webui
+https://github.com/w4ester/gearup
 """
 )
 
