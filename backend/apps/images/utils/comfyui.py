@@ -3,10 +3,10 @@ import uuid
 import json
 import urllib.request
 import urllib.parse
-import random
 import logging
 
 from config import SRC_LOG_LEVELS
+import secrets
 
 log = logging.getLogger(__name__)
 log.setLevel(SRC_LOG_LEVELS["COMFYUI"])
@@ -212,7 +212,7 @@ def comfyui_generate_image(
         comfyui_prompt["3"]["inputs"]["steps"] = payload.steps
 
     comfyui_prompt["3"]["inputs"]["seed"] = (
-        payload.seed if payload.seed else random.randint(0, 18446744073709551614)
+        payload.seed if payload.seed else secrets.SystemRandom().randint(0, 18446744073709551614)
     )
 
     try:

@@ -18,7 +18,6 @@ from pydantic import BaseModel, ConfigDict
 import os
 import re
 import copy
-import random
 import requests
 import json
 import uuid
@@ -49,6 +48,7 @@ from config import (
     AppConfig,
 )
 from utils.misc import calculate_sha256
+import secrets
 
 log = logging.getLogger(__name__)
 log.setLevel(SRC_LOG_LEVELS["OLLAMA"])
@@ -582,7 +582,7 @@ async def show_model_info(form_data: ModelNameForm, user=Depends(get_verified_us
             detail=ERROR_MESSAGES.MODEL_NOT_FOUND(form_data.name),
         )
 
-    url_idx = random.choice(app.state.MODELS[form_data.name]["urls"])
+    url_idx = secrets.choice(app.state.MODELS[form_data.name]["urls"])
     url = app.state.config.OLLAMA_BASE_URLS[url_idx]
     log.info(f"url: {url}")
 
@@ -633,7 +633,7 @@ async def generate_embeddings(
             model = f"{model}:latest"
 
         if model in app.state.MODELS:
-            url_idx = random.choice(app.state.MODELS[model]["urls"])
+            url_idx = secrets.choice(app.state.MODELS[model]["urls"])
         else:
             raise HTTPException(
                 status_code=400,
@@ -683,7 +683,7 @@ def generate_ollama_embeddings(
             model = f"{model}:latest"
 
         if model in app.state.MODELS:
-            url_idx = random.choice(app.state.MODELS[model]["urls"])
+            url_idx = secrets.choice(app.state.MODELS[model]["urls"])
         else:
             raise HTTPException(
                 status_code=400,
@@ -752,7 +752,7 @@ async def generate_completion(
             model = f"{model}:latest"
 
         if model in app.state.MODELS:
-            url_idx = random.choice(app.state.MODELS[model]["urls"])
+            url_idx = secrets.choice(app.state.MODELS[model]["urls"])
         else:
             raise HTTPException(
                 status_code=400,
@@ -855,7 +855,7 @@ async def generate_chat_completion(
             model = f"{model}:latest"
 
         if model in app.state.MODELS:
-            url_idx = random.choice(app.state.MODELS[model]["urls"])
+            url_idx = secrets.choice(app.state.MODELS[model]["urls"])
         else:
             raise HTTPException(
                 status_code=400,
@@ -964,7 +964,7 @@ async def generate_openai_chat_completion(
             model = f"{model}:latest"
 
         if model in app.state.MODELS:
-            url_idx = random.choice(app.state.MODELS[model]["urls"])
+            url_idx = secrets.choice(app.state.MODELS[model]["urls"])
         else:
             raise HTTPException(
                 status_code=400,
