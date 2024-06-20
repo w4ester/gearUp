@@ -3,20 +3,17 @@ import sys
 import logging
 import chromadb
 from chromadb import Settings
-from base64 import b64encode
 from bs4 import BeautifulSoup
-from typing import TypeVar, Generic, Union
+from typing import TypeVar, Generic
 
 from pathlib import Path
 import json
 import yaml
 
 import markdown
-import requests
 import shutil
-
-from secrets import token_bytes
 from constants import ERROR_MESSAGES
+from security import safe_requests
 
 ####################################
 # Load .env file
@@ -295,7 +292,7 @@ CUSTOM_NAME = os.environ.get("CUSTOM_NAME", "")
 
 if CUSTOM_NAME:
     try:
-        r = requests.get(f"https://api.openwebui.com/api/v1/custom/{CUSTOM_NAME}")
+        r = safe_requests.get(f"https://api.openwebui.com/api/v1/custom/{CUSTOM_NAME}")
         data = r.json()
         if r.ok:
             if "logo" in data:
@@ -305,7 +302,7 @@ if CUSTOM_NAME:
                     else data["logo"]
                 )
 
-                r = requests.get(url, stream=True)
+                r = safe_requests.get(url, stream=True)
                 if r.status_code == 200:
                     with open(f"{STATIC_DIR}/favicon.png", "wb") as f:
                         r.raw.decode_content = True
